@@ -45,6 +45,7 @@
 #define ESP32_I2C_SDA 18            // GPIO18   SI4732/5 Data
 #define AUDIO_MUTE     3            // GPIO3    Hardware L/R mute, controlled via SI4735 code (1 = Mute)
 #define PIN_AMP_EN    10            // GPIO10   Hardware Audio Amplifer enable (1 = Enable)
+#define SBATS_FUZZ_PIN 13           // GPIO13   Experimental digital white noise generator
 
 // Display PINs
 #define PIN_LCD_BL    38            // GPIO38   LCD backlight (PWM brightness control)
