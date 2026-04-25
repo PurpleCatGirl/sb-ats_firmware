@@ -18,17 +18,17 @@ static bool     sbatsRev = false;
 static void sbatsInit(uint16_t freq) {
   const Band *band = getCurrentBand();
   const Step *step = getCurrentStep();
-  sbatsCurFreq      = freq;               // start from wherever we are on the dial
-  sbatsMinFreq      = band->minimumFreq;  // current band lower edge
-  sbatsMaxFreq      = band->maximumFreq;  // current band upper edge
-  sbatsStep         = step->step;         // current step size
-  sbatsTime         = millis();           // reset the clock
-  sbatsPress        = 0;                  // clear any button-pressing
-  if(band->bandName == "VHF") {           // override FM band limits for north america
-    sbatsMinFreq    = 8710;               // no stations below 87.1 MHz
-    sbatsMaxFreq    = 10790;              // no stations above 107.9 MHz
-  } else if(band->bandName == "MW1") {    // override AM band limits for north america
-    sbatsMinFreq    = 500;                // no stations below 500 kHz
+  sbatsCurFreq      = freq;                // start from wherever we are on the dial
+  sbatsMinFreq      = band->minimumFreq;   // current band lower edge
+  sbatsMaxFreq      = band->maximumFreq;   // current band upper edge
+  sbatsStep         = step->step;          // current step size
+  sbatsTime         = millis();            // reset the timer
+  sbatsPress        = 0;                   // clear any button-pressing
+  if(band->bandName == "VHF") {            // override FM band limits for north america
+    sbatsMinFreq    = 8710;                // no stations below 87.1 MHz
+    sbatsMaxFreq    = 10790;               // no stations above 107.9 MHz
+  } else if(band->bandName == "MW1") {     // override AM band limits for north america
+    sbatsMinFreq    = 500;                 // no stations below 500 kHz
   }
   // clear parts of the screen  (screen size 320 x 170)
   spr.fillRect(90, 0, 240, 15, TH.bg);     // above band/mode, right of the sidebar
@@ -39,6 +39,8 @@ static void sbatsInit(uint16_t freq) {
 }
 
 static bool sbatsMainLoop() {
+  // EXPERIMENTAL - white noise on SBATS_FUZZ_PIN
+  digitalWrite(SBATS_FUZZ_PIN, random(2));
   // check for button activity
   if(sbatsPress) {                                   // encoder previously pressed
     if(digitalRead(ENCODER_PUSH_BUTTON)==HIGH) {     // encoder released
@@ -93,9 +95,11 @@ static bool sbatsMainLoop() {
 // Run sb-ats
 void sbatsRun(uint16_t originalFreq) {
   // initialize SB-ATS
+  digitalWrite(SBATS_FUZZ_PIN, LOW);
   sbatsInit(originalFreq);
   // run the main loop until it returns false
   while(sbatsMainLoop()) delay(5);
+  digitalWrite(SBATS_FUZZ_PIN, LOW);
   // Restore current frequency
   rx.setFrequency(originalFreq);
   currentCmd=CMD_NONE;
