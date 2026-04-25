@@ -238,6 +238,10 @@ void setup()
   drawScreen();
   ledcWrite(PIN_LCD_BL, currentBrt);
 
+    // initialize sbats pin(s)
+  pinMode(SBATS_FUZZ_PIN, OUTPUT);
+  digitalWrite(SBATS_FUZZ_PIN, LOW);
+
   // Interrupt actions for Rotary encoder
   // Note: Moved to end of setup to avoid inital interrupt actions
   // ICACHE_RAM_ATTR void rotaryEncoder(); see rotaryEncoder implementation below.
